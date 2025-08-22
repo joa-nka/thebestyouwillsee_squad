@@ -39,7 +39,7 @@ public class PortfolioEntity {
         this.id = id;
     }
 
-    @NonNull
+    @Column(nullable = false)
     public String getName() {
         return name;
     }
@@ -48,7 +48,7 @@ public class PortfolioEntity {
         this.name = name;
     }
 
-    @OneToMany(mappedBy =  "portfolio", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy =  "portfolioEntity", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     @JsonManagedReference
     private List<PortfolioItemEntity> items = new ArrayList<>();
 

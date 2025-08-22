@@ -1,5 +1,6 @@
 package com.neueda.portfolio_managment_app.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 
 @Entity
@@ -15,9 +16,9 @@ public class PortfolioItemEntity {
     private int quantity;
 
 
-    public PortfolioItemEntity(Long id, String ticker, int quantity) {
+    public PortfolioItemEntity(Long id, String assetCode, int quantity) {
         this.id = id;
-        this.assetCode = ticker;
+        this.assetCode = assetCode;
         this.quantity = quantity;
     }
 
@@ -63,7 +64,8 @@ public class PortfolioItemEntity {
     }
 
     @ManyToOne
-    @JoinColumn(name = "portfolioItem_id")
+    @JoinColumn(name = "portfolio_id")
+    @JsonBackReference
     private PortfolioEntity portfolioEntity;
 
 }

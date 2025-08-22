@@ -31,7 +31,7 @@ public class PortfolioItemService {
     }
 
     public List<PortfolioItemEntity> findByPortfolio(Long portfolioId) {
-        return items.findByPortfolioId(portfolioId); }
+        return items.findByPortfolioEntityId(portfolioId); }
 
 
     public PortfolioItemEntity findOne(Long itemId) {

@@ -7,5 +7,5 @@ import java.util.List;
 
 public interface PortfolioItemRepository extends JpaRepository<PortfolioItemEntity, Long> {
 
-    List<PortfolioItemEntity> findByPortfolioId(Long portfolioId);
+    List<PortfolioItemEntity> findByPortfolioEntityId(Long portfolioId);
 }
