@@ -22,6 +22,14 @@ public class PortfolioEntity {
         this.name = name;
     }
 
+    protected PortfolioEntity(){
+
+    }
+
+    public PortfolioEntity(String name){
+        this.name = name;
+    }
+
 
     public Long getId() {
         return id;
