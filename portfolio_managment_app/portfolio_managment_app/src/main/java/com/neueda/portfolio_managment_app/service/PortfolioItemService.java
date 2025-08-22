@@ -5,7 +5,6 @@ import com.neueda.portfolio_managment_app.entity.PortfolioItemEntity;
 import com.neueda.portfolio_managment_app.repository.PortfolioItemRepository;
 import com.neueda.portfolio_managment_app.repository.PortfolioRepository;
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -43,7 +42,7 @@ public class PortfolioItemService {
         PortfolioItemEntity it = findOne(itemId); it.setQuantity(qty);
         return items.save(it);
     }
-    public PortfolioItemEntity changeSymbol(Long itemId, String assetCode) {
+    public PortfolioItemEntity changeAssetCode(Long itemId, String assetCode) {
         PortfolioItemEntity it = findOne(itemId); it.setAssetCode(assetCode);
         return items.save(it);
     }

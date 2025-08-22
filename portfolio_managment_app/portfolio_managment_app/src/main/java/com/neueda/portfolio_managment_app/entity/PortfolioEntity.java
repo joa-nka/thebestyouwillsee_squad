@@ -22,7 +22,7 @@ public class PortfolioEntity {
         this.name = name;
     }
 
-    protected PortfolioEntity(){
+    public PortfolioEntity(){
 
     }
 
@@ -48,7 +48,7 @@ public class PortfolioEntity {
         this.name = name;
     }
 
-    @OneToMany(mappedBy =  "task", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy =  "portfolio", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     @JsonManagedReference
     private List<PortfolioItemEntity> items = new ArrayList<>();
 
