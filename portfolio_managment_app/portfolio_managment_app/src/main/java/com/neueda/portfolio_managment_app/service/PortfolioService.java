@@ -1,12 +1,13 @@
 package com.neueda.portfolio_managment_app.service;
 
 import com.neueda.portfolio_managment_app.entity.PortfolioEntity;
-import com.neueda.portfolio_managment_app.repository.PortfolioItemRepository;
 import com.neueda.portfolio_managment_app.repository.PortfolioRepository;
 import jakarta.transaction.Transactional;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Service
 public class PortfolioService {
 
 

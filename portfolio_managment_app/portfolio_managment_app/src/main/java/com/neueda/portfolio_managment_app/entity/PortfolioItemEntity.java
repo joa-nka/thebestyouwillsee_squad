@@ -9,7 +9,9 @@ public class PortfolioItemEntity {
     @GeneratedValue
     private Long id;
 
+   @Column(nullable = false)
     private String assetCode;
+
     private int quantity;
 
 
@@ -17,6 +19,15 @@ public class PortfolioItemEntity {
         this.id = id;
         this.assetCode = ticker;
         this.quantity = quantity;
+    }
+
+    public PortfolioItemEntity(String ticker, int quantity) {
+        this.assetCode = ticker;
+        this.quantity = quantity;
+    }
+
+    public PortfolioItemEntity() {
+
     }
 
     public Long getId() {
@@ -42,6 +53,15 @@ public class PortfolioItemEntity {
     public void setQuantity(int quantity) {
         this.quantity = quantity;
     }
+
+    public PortfolioEntity getPortfolioEntity() {
+        return portfolioEntity;
+    }
+
+    public void setPortfolioEntity(PortfolioEntity portfolioEntity) {
+        this.portfolioEntity = portfolioEntity;
+    }
+
     @ManyToOne
     @JoinColumn(name = "portfolioItem_id")
     private PortfolioEntity portfolioEntity;
