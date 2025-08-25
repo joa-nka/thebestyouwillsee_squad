@@ -1,9 +1,13 @@
 package com.neueda.portfolio_managment_app.controller;
 
 import com.neueda.portfolio_managment_app.entity.PortfolioItemEntity;
+import com.neueda.portfolio_managment_app.enumes.Exchange;
 import com.neueda.portfolio_managment_app.service.PortfolioItemService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -17,8 +21,20 @@ public class PortfolioItemController {
     }
 
     @PostMapping("/portfolios/{portfolioId}/items")
-    public PortfolioItemEntity add(@PathVariable Long portfolioId, @RequestParam String assetCode, @RequestParam int quantity){
-        return portfolioItemService.addItem(portfolioId, assetCode, quantity);
+    public PortfolioItemEntity add(
+            @PathVariable Long portfolioId,
+            @RequestParam String assetCode,
+            @RequestParam int quantity,
+            @RequestParam BigDecimal buyPrice,
+            @RequestParam Exchange exchange,
+            @RequestParam(required = false) LocalDate tradeDate) {
+        return portfolioItemService.addItem(
+                portfolioId,
+                assetCode,
+                quantity,
+                buyPrice,
+                exchange,
+                tradeDate != null ? tradeDate : LocalDate.now());
     }
 
     @GetMapping("/portfolios/{portfolioId}/items")
