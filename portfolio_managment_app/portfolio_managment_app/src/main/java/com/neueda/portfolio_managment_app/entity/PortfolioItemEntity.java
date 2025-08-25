@@ -3,6 +3,9 @@ package com.neueda.portfolio_managment_app.entity;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
+
 @Entity
 public class PortfolioItemEntity {
 
@@ -13,7 +16,19 @@ public class PortfolioItemEntity {
    @Column(nullable = false)
     private String assetCode;
 
+    @Column(nullable = false)
     private int quantity;
+
+    @Column(nullable = false, precision = 19, scale = 4)
+    private BigDecimal buyPrice = BigDecimal.ZERO;
+
+    @Column(nullable = true)
+    private LocalDate tradeDate;
+
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "portfolio_id", nullable = false)
+    @JsonBackReference
+    private PortfolioEntity portfolioEntity;
 
 
     public PortfolioItemEntity(Long id, String assetCode, int quantity) {
@@ -62,10 +77,5 @@ public class PortfolioItemEntity {
     public void setPortfolioEntity(PortfolioEntity portfolioEntity) {
         this.portfolioEntity = portfolioEntity;
     }
-
-    @ManyToOne
-    @JoinColumn(name = "portfolio_id")
-    @JsonBackReference
-    private PortfolioEntity portfolioEntity;
 
 }
