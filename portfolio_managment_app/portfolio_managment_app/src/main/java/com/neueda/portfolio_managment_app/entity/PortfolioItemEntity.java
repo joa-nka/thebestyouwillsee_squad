@@ -102,4 +102,7 @@ public class PortfolioItemEntity {
     }
 
 
+    public Exchange getExchange() {
+        return exchange;
+    }
 }
