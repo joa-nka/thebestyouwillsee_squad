@@ -1,9 +1,12 @@
 package com.neueda.portfolio_managment_app.service;
 
+import org.springframework.stereotype.Service;
+
 import java.math.BigDecimal;
 import java.util.Map;
 import java.math.RoundingMode;
 
+@Service
 public class FxService {
 
     private static final String BASE_CURRENCY = "EUR";
