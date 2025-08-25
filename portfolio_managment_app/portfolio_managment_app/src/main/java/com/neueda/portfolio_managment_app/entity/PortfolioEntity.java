@@ -53,4 +53,6 @@ public class PortfolioEntity {
     private List<PortfolioItemEntity> items = new ArrayList<>();
 
 
+    public void getItems() {
+    }
 }

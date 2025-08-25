@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Portfolio Manager</title>
+    <link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+<h1>Portfolio Manager</h1>
+
+<div class="container">
+    <!-- LEFT: Portfolios -->
+    <div class="column">
+        <h2>Portfolios</h2>
+
+        <form id="portfolio-form">
+            <input type="text" id="portfolio-name-input" placeholder="Enter portfolio name..." required />
+            <button type="submit">Add Portfolio</button>
+        </form>
+
+        <ul id="portfolio-list"></ul>
+    </div>
+
+    <!-- RIGHT: Items of selected portfolio -->
+    <div class="column" id="items-column" style="display:none;">
+        <h2 id="items-header">Items for: </h2>
+
+        <form id="item-form">
+            <input type="hidden" id="portfolio-id-hidden" />
+            <input type="text" id="asset-code-input" placeholder="Asset code (e.g. AAPL)" required />
+            <input type="number" id="quantity-input" placeholder="Quantity" min="1" required />
+            <button type="submit">Add Item</button>
+        </form>
+
+        <ul id="item-list"></ul>
+    </div>
+</div>
+
+<script>
+    const portfolioList = document.getElementById('portfolio-list');
+    const portfolioForm = document.getElementById('portfolio-form');
+    const portfolioNameInput = document.getElementById('portfolio-name-input');
+    const itemsColumn = document.getElementById('items-column');
+    const itemsHeader = document.getElementById('items-header');
+    const itemForm = document.getElementById('item-form');
+    const assetCodeInput = document.getElementById('asset-code-input');
+    const quantityInput = document.getElementById('quantity-input');
+    const itemList = document.getElementById('item-list');
+    const portfolioIdHidden = document.getElementById('portfolio-id-hidden');
+    let selectedPortfolioId = null;
+
+    function hideItemsPanel() {
+      itemsColumn.style.display = 'none';
+      selectedPortfolioId = null;
+    }
+
+    function displayItems(items) {
+      itemList.innerHTML = '';
+      items.forEach(it => {
+        const li = document.createElement('li');
+        li.innerHTML = `
+          <span>${it.assetCode} — qty: ${it.quantity}</span>
+          <div class="task-actions">
+            <button class="edit-btn" data-type="item" data-id="${it.id}">Edit</button>
+            <button class="delete-btn" data-type="item" data-id="${it.id}">Delete</button>
+          </div>`;
+        itemList.appendChild(li);
+      });
+    }
+
+    async function fetchPortfolios() {
+      const res = await fetch('/api/portfolios', { cache: 'no-store' });
+      const portfolios = await res.json();
+      portfolioList.innerHTML = '';
+      portfolios.forEach(p => {
+        const li = document.createElement('li');
+        li.dataset.id = p.id;
+        li.innerHTML = `
+          <span>${p.name}</span>
+          <div class="task-actions">
+            <button class="edit-btn" data-type="portfolio" data-id="${p.id}">Edit</button>
+            <button class="delete-btn" data-type="portfolio" data-id="${p.id}">Delete</button>
+          </div>`;
+        li.addEventListener('click', () => selectPortfolio(p));
+        portfolioList.appendChild(li);
+      });
+      if (selectedPortfolioId) {
+        const found = portfolios.find(pp => pp.id === Number(selectedPortfolioId));
+        if (found) await selectPortfolio(found);
+        else hideItemsPanel();
+      }
+    }
+
+    async function selectPortfolio(p) {
+      selectedPortfolioId = p.id;
+      itemsHeader.textContent = `Items for: ${p.name}`;
+      portfolioIdHidden.value = p.id;
+      itemsColumn.style.display = 'block';
+      document.querySelectorAll('#portfolio-list li')
+        .forEach(el => el.classList.toggle('active-task', Number(el.dataset.id) === p.id));
+      const res = await fetch(`/api/portfolios/${p.id}/items`, { cache: 'no-store' });
+      const items = await res.json();
+      displayItems(Array.isArray(items) ? items : []);
+    }
+
+    portfolioForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const name = portfolioNameInput.value.trim();
+      if (!name) return;
+      await fetch(`/api/portfolios?name=${encodeURIComponent(name)}`, { method: 'POST' });
+      portfolioNameInput.value = '';
+      await fetchPortfolios();
+    });
+
+    itemForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const portfolioId = portfolioIdHidden.value;
+      const assetCode = assetCodeInput.value.trim();
+      const quantity = Number(quantityInput.value);
+      if (!assetCode || quantity < 1) return;
+      await fetch(`/api/portfolios/${portfolioId}/items?assetCode=${encodeURIComponent(assetCode)}&quantity=${quantity}`, { method: 'POST' });
+      assetCodeInput.value = '';
+      quantityInput.value = '';
+      await fetchPortfoliosAndReselect(portfolioId);
+    });
+
+    async function fetchPortfoliosAndReselect(portfolioId) {
+      const res = await fetch('/api/portfolios', { cache: 'no-store' });
+      const portfolios = await res.json();
+      const found = portfolios.find(p => p.id === Number(portfolioId));
+      await fetchPortfolios();
+      if (found) await selectPortfolio(found);
+    }
+
+    document.addEventListener('click', async (e) => {
+      const btn = e.target.closest('button');
+      if (!btn) return;
+      const type = btn.dataset.type;
+      const id = btn.dataset.id;
+
+      if (btn.classList.contains('delete-btn')) {
+        e.stopPropagation();
+        if (type === 'portfolio') {
+          await fetch(`/api/portfolios/${id}`, { method: 'DELETE' });
+          if (Number(id) === Number(selectedPortfolioId)) hideItemsPanel();
+          await fetchPortfolios();
+        } else if (type === 'item') {
+          await fetch(`/api/items/${id}`, { method: 'DELETE' });
+          await fetchPortfoliosAndReselect(selectedPortfolioId);
+        }
+        return;
+      }
+
+      if (btn.classList.contains('edit-btn')) {
+        e.stopPropagation();
+        const li = btn.closest('li');
+        const span = li.querySelector('span');
+        const txt = span.textContent;
+        if (type === 'portfolio') {
+          li.innerHTML = `
+            <input type="text" class="edit-input" value="${txt}" required />
+            <div class="task-actions">
+              <button class="save-btn" data-type="portfolio" data-id="${id}">Save</button>
+              <button class="cancel-btn">Cancel</button>
+            </div>`;
+        } else {
+          const m = txt.match(/^(.+?)\s+—\s+qty:\s+(\d+)/);
+          const a = m ? m[1] : '';
+          const q = m ? Number(m[2]) : 1;
+          li.innerHTML = `
+            <input type="text" class="edit-asset" value="${a}" required />
+            <input type="number" class="edit-qty" value="${q}" min="1" required />
+            <div class="task-actions">
+              <button class="save-btn" data-type="item" data-id="${id}">Save</button>
+              <button class="cancel-btn">Cancel</button>
+            </div>`;
+        }
+        return;
+      }
+
+      if (btn.classList.contains('save-btn')) {
+        const li = btn.closest('li');
+        const t = btn.dataset.type;
+        const sid = btn.dataset.id;
+        if (t === 'portfolio') {
+          const newName = li.querySelector('.edit-input').value.trim();
+          if (newName) {
+            await fetch(`/api/portfolios/${sid}/name?name=${encodeURIComponent(newName)}`, { method: 'PUT' });
+            await fetchPortfolios();
+          }
+        } else {
+          const newAsset = li.querySelector('.edit-asset').value.trim();
+          const newQty = Number(li.querySelector('.edit-qty').value);
+          if (newAsset && newQty > 0) {
+            await fetch(`/api/items/${sid}/asset?assetCode=${encodeURIComponent(newAsset)}`, { method: 'PUT' });
+            await fetch(`/api/items/${sid}/quantity?quantity=${newQty}`, { method: 'PUT' });
+            await fetchPortfoliosAndReselect(selectedPortfolioId);
+          }
+        }
+        return;
+      }
+
+      if (btn.classList.contains('cancel-btn')) {
+        if (selectedPortfolioId) await fetchPortfoliosAndReselect(selectedPortfolioId);
+        else await fetchPortfolios();
+      }
+    });
+
+    document.addEventListener('DOMContentLoaded', fetchPortfolios);
+</script>
+</body>
+</html>
