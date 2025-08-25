@@ -47,5 +47,20 @@ public class ReportController {
         return result;
     }
 
+    @GetMapping("/portfolio/{id}/purchases-eur")
+    public List<Map<String, Object>> getPurchasesInEur(@PathVariable Long id) {
+        List<Map<String, Object>> out = new ArrayList<>();
+        for (PortfolioItemEntity it : portfolioItemRepository.findByPortfolioEntityId(id)) {
+            BigDecimal valueSrc = it.getBuyPrice().multiply(BigDecimal.valueOf(it.getQuantity()));
+            BigDecimal valueEur = fxService.convertToBase(valueSrc, it.getExchange().getCurrency());
+            out.add(Map.of(
+                    "asset", it.getAssetCode(),
+                    "exchange", it.getExchange().name(),
+                    "valueEur", valueEur
+            ));
+        }
+        return out;
+    }
+
 
 }

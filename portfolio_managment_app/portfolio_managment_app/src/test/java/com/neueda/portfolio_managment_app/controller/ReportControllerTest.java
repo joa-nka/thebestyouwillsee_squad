@@ -42,4 +42,34 @@ class ReportControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().json("[]"));
     }
+
+    @Test
+    void purchasesInEur_returnsListWithOneItem() throws Exception {
+        var item = Mockito.mock(PortfolioItemEntity.class);
+        var ex = Exchange.values()[0];
+
+        when(item.getBuyPrice()).thenReturn(new BigDecimal("50"));
+        when(item.getQuantity()).thenReturn(2);
+        when(item.getExchange()).thenReturn(ex);
+        when(item.getAssetCode()).thenReturn("AAPL");
+
+        when(repo.findByPortfolioEntityId(1L)).thenReturn(List.of(item));
+        when(fx.convertToBase(new BigDecimal("100"), ex.getCurrency()))
+                .thenReturn(new BigDecimal("100.00"));
+
+        mvc.perform(get("/reports/portfolio/1/purchases-eur"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].asset").value("AAPL"))
+                .andExpect(jsonPath("$[0].exchange").value(ex.name()))
+                .andExpect(jsonPath("$[0].valueEur").value(100.00));
+    }
+
+    @Test
+    void purchasesInEur_emptyPortfolio_returnsEmptyArray() throws Exception {
+        when(repo.findByPortfolioEntityId(99L)).thenReturn(List.of());
+
+        mvc.perform(get("/reports/portfolio/99/purchases-eur"))
+                .andExpect(status().isOk())
+                .andExpect(content().json("[]"));
+    }
 }
