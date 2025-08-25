@@ -13,7 +13,7 @@ public class PortfolioEntity {
     @GeneratedValue
     private Long id;
 
-    @NonNull
+    @Column(nullable = false)
     private String name;
 
 
@@ -53,4 +53,6 @@ public class PortfolioEntity {
     private List<PortfolioItemEntity> items = new ArrayList<>();
 
 
+    public void getItems() {
+    }
 }

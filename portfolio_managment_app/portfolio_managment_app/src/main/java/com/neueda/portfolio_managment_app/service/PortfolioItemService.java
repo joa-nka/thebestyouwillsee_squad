@@ -5,6 +5,8 @@ import com.neueda.portfolio_managment_app.entity.PortfolioItemEntity;
 import com.neueda.portfolio_managment_app.repository.PortfolioItemRepository;
 import com.neueda.portfolio_managment_app.repository.PortfolioRepository;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
+import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -47,5 +49,11 @@ public class PortfolioItemService {
         return items.save(it);
     }
 
-    public void delete(Long itemId) { items.deleteById(itemId); }
+    @Transactional
+    public void delete(Long itemId) {
+//        PortfolioItemEntity item = items.findBy(itemId)
+//                .orElseThrow(() -> new ChangeSetPersister.NotFoundException("Item not found"));
+//        PortfolioEntity portfolio = item.getPortfolioEntity();
+//        portfolio.getItems().remove(item)
+        items.deleteById(itemId); }
 }

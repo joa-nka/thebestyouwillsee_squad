@@ -8,11 +8,11 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api")
-public class PortfolioIemController {
+public class PortfolioItemController {
 
     private final PortfolioItemService portfolioItemService;
 
-    public PortfolioIemController(PortfolioItemService portfolioItemService) {
+    public PortfolioItemController(PortfolioItemService portfolioItemService) {
         this.portfolioItemService = portfolioItemService;
     }
 

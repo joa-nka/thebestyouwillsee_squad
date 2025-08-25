@@ -36,6 +36,7 @@ public class PortfolioService {
         portfolioEntity.setName(newName);
         return portfolioEntity;
     }
+
     public void delete(Long id){
         portfolioRepository.deleteById(id);
     }
