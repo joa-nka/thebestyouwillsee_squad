@@ -1,6 +1,6 @@
 package com.neueda.portfolio_managment_app.service;
 import com.neueda.portfolio_managment_app.enumes.Exchange;
-import com.neueda.portfolio_managment_app.service.PriceService;
+import com.neueda.portfolio_managment_app.repository.PriceService;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -10,7 +10,7 @@ import java.util.Map;
 
 
 @Service
-public class PriceServiceCached  {
+public class PriceServiceCached implements PriceService {
     private final Map<String, BigDecimal> cache = new ConcurrentHashMap<>();
 
     private BigDecimal compute(String symbol, Exchange ex){
