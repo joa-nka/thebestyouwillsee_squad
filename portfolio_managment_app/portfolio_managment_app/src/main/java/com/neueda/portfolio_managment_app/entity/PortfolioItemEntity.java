@@ -111,8 +111,4 @@ public class PortfolioItemEntity {
         if (tradeDate == null) tradeDate = LocalDate.now();
     }
 
-
-    public Exchange getExchange() {
-        return exchange;
-    }
 }
