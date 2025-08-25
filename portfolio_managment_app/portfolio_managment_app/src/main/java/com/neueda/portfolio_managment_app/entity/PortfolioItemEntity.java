@@ -1,6 +1,7 @@
 package com.neueda.portfolio_managment_app.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.neueda.portfolio_managment_app.enumes.Exchange;
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;
@@ -30,17 +31,19 @@ public class PortfolioItemEntity {
     @JsonBackReference
     private PortfolioEntity portfolioEntity;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Exchange exchange;
 
-    public PortfolioItemEntity(Long id, String assetCode, int quantity) {
-        this.id = id;
+
+    public PortfolioItemEntity( String assetCode, int quantity, BigDecimal buyPrice, Exchange exchange, PortfolioEntity portfolio, LocalDate tradeDate) {
         this.assetCode = assetCode;
         this.quantity = quantity;
+        this.buyPrice = buyPrice != null ? buyPrice : BigDecimal.ZERO;
+        this.exchange = exchange;
+        this.tradeDate = tradeDate;
     }
 
-    public PortfolioItemEntity(String ticker, int quantity) {
-        this.assetCode = ticker;
-        this.quantity = quantity;
-    }
 
     public PortfolioItemEntity() {
 
@@ -69,13 +72,34 @@ public class PortfolioItemEntity {
     public void setQuantity(int quantity) {
         this.quantity = quantity;
     }
+     public  BigDecimal getBuyPrice() {
+        return buyPrice;
+     }
 
-    public PortfolioEntity getPortfolioEntity() {
-        return portfolioEntity;
+     public void setBuyPrice(BigDecimal buyPrice){
+        this.buyPrice = buyPrice;
+
+     }
+
+    public LocalDate getBuyDate() {
+        return tradeDate;
     }
 
+    public PortfolioEntity getPortfolioEntity() { return portfolioEntity; }
     public void setPortfolioEntity(PortfolioEntity portfolioEntity) {
-        this.portfolioEntity = portfolioEntity;
+        this.portfolioEntity = portfolioEntity; }
+
+    public LocalDate getTradeDate() {
+        return tradeDate;
     }
+    public void setTradeDate(LocalDate tradeDate) {
+        this.tradeDate = tradeDate;
+    }
+
+    @PrePersist
+    void prePersist() {
+        if (tradeDate == null) tradeDate = LocalDate.now();
+    }
+
 
 }
