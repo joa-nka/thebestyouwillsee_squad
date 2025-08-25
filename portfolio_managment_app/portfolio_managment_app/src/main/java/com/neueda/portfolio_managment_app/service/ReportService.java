@@ -3,6 +3,7 @@ package com.neueda.portfolio_managment_app.service;
 import com.neueda.portfolio_managment_app.entity.PortfolioItemEntity;
 import com.neueda.portfolio_managment_app.enumes.Exchange;
 import com.neueda.portfolio_managment_app.repository.PortfolioItemRepository;
+import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -10,6 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@Service
 public class ReportService {
     private final PortfolioItemRepository portfolioItemRepository;
     private final FxService fxService;
