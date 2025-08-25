@@ -23,23 +23,24 @@ public class PortfolioItemEntity {
     @Column(nullable = false, precision = 19, scale = 4)
     private BigDecimal buyPrice = BigDecimal.ZERO;
 
-    @Column(nullable = true)
-    private LocalDate tradeDate;
-
-    @ManyToOne(optional = false)
-    @JoinColumn(name = "portfolio_id", nullable = false)
-    @JsonBackReference
-    private PortfolioEntity portfolioEntity;
-
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Exchange exchange;
 
+    @Column(nullable = true)
+    private LocalDate tradeDate;
 
-    public PortfolioItemEntity( String assetCode, int quantity, BigDecimal buyPrice, Exchange exchange, PortfolioEntity portfolio, LocalDate tradeDate) {
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @JoinColumn(name = "portfolio_id", nullable = false)
+    @JsonBackReference
+    private PortfolioEntity portfolioEntity;
+
+
+    public PortfolioItemEntity (String assetCode, int quantity, BigDecimal buyPrice, Exchange exchange, PortfolioEntity portfolio, LocalDate tradeDate) {
         this.assetCode = assetCode;
         this.quantity = quantity;
         this.buyPrice = buyPrice != null ? buyPrice : BigDecimal.ZERO;
+        this.portfolioEntity = portfolio;
         this.exchange = exchange;
         this.tradeDate = tradeDate;
     }
@@ -72,6 +73,15 @@ public class PortfolioItemEntity {
     public void setQuantity(int quantity) {
         this.quantity = quantity;
     }
+
+    public Exchange getExchange() {
+        return exchange;
+    }
+
+    public void setExchange(Exchange exchange) {
+        this.exchange = exchange;
+    }
+
      public  BigDecimal getBuyPrice() {
         return buyPrice;
      }
@@ -100,6 +110,5 @@ public class PortfolioItemEntity {
     void prePersist() {
         if (tradeDate == null) tradeDate = LocalDate.now();
     }
-
 
 }
